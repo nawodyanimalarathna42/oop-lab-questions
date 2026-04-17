@@ -13,10 +13,19 @@ public abstract class StaffMember {
     private final String staffId;
     protected String department;
 
+    private static int staffCount = 0;
+    
     public StaffMember(String fullName, String staffId, String department) {
         this.fullName = fullName;
         this.staffId = staffId;
         this.department = department;
+        staffCount++;
+    }
+    public static void showSystemName() {
+        System.out.println("System Name: Campus Staff Payment System");
+    }
+public static int getStaffCount() {
+        return staffCount;
     }
 
     public String getFullName() {
