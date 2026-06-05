@@ -11,6 +11,7 @@ package lab8;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.ResultSet;
 
 public class StudentDAO {
     
@@ -28,6 +29,23 @@ public class StudentDAO {
             
             System.out.println("Student added successfully.");
             
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+        }
+    }
+public void displayAllStudents() {
+        String sql = "SELECT student_id, student_name, mark FROM students";
+        try (Connection connection = StudentDatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+            
+            while (resultSet.next()) {
+                int id = resultSet.getInt("student_id");
+                String name = resultSet.getString("student_name");
+                int mark = resultSet.getInt("mark");
+                
+                System.out.println("ID: " + id + ", Name: " + name + ", Mark: " + mark);
+            }
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
         }
