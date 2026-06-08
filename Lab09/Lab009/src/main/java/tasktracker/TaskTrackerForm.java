@@ -96,9 +96,10 @@ public class TaskTrackerForm extends javax.swing.JFrame {
                                     .addGap(0, 40, Short.MAX_VALUE)))))
                     .addComponent(btnAdd)
                     .addComponent(btnSearch)
-                    .addComponent(btnUpdate)
-                    .addComponent(btnDelete)
-                    .addComponent(btnClear))
+                    .addComponent(btnClear)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(btnUpdate, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnDelete, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap(90, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -151,14 +152,12 @@ cmbStatus.setSelectedIndex(0);        // TODO add your handling code here:
 
     Task task = new Task(id, title, status);
     TaskDAO dao = new TaskDAO();
-    Task existingTask = dao.findTaskById(id);
-        if (existingTask != null) {
-            JOptionPane.showMessageDialog(this, "Task ID already exists! Please use a unique ID.");
-            return;
-        }
+    
     dao.addTask(task);
 
     JOptionPane.showMessageDialog(this, "Task added successfully.");
+    } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(this, "Invalid Task ID! Please enter a valid number.", "Input Error", JOptionPane.ERROR_MESSAGE);
 } catch (Exception ex) {
     JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
 }      // TODO add your handling code here:
@@ -178,7 +177,7 @@ try {
     if (task != null) {
         txtTaskTitle.setText(task.getTaskTitle());
         cmbStatus.setSelectedItem(task.getStatus());
-        JOptionPane.showMessageDialog(this, "Task found successfully.");
+        
     } else {
         JOptionPane.showMessageDialog(this, "Task not found!");
         txtTaskTitle.setText("");
@@ -207,7 +206,7 @@ try {
     boolean updated = dao.updateTask(task);
 
     if (updated) {
-        JOptionPane.showMessageDialog(this, "Task updated successfully.");
+        
     } else {
         JOptionPane.showMessageDialog(this, "Task not found to update.");
     }
@@ -237,7 +236,7 @@ try {
 
     boolean deleted = dao.deleteTask(id);
     if (deleted) {
-        JOptionPane.showMessageDialog(this, "Task deleted successfully.");
+        
         // මකා දැමූ පසු Form එක clear කරනවා
         txtTaskId.setText("");
         txtTaskTitle.setText("");
