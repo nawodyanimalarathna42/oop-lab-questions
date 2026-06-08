@@ -8,6 +8,9 @@ package tasktracker;
  *
  * @author wrs
  */
+import javax.swing.JOptionPane;
+import tasktracker.Task;
+import tasktracker.TaskDAO;
 public class TaskTrackerForm extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TaskTrackerForm.class.getName());
@@ -57,12 +60,16 @@ public class TaskTrackerForm extends javax.swing.JFrame {
         cmbStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Pending", "In Progress", "Completed" }));
 
         btnAdd.setText("Add");
+        btnAdd.addActionListener(this::btnAddActionPerformed);
 
         btnSearch.setText("Search");
+        btnSearch.addActionListener(this::btnSearchActionPerformed);
 
         btnUpdate.setText("Update");
+        btnUpdate.addActionListener(this::btnUpdateActionPerformed);
 
         btnDelete.setText("Delete");
+        btnDelete.addActionListener(this::btnDeleteActionPerformed);
 
         btnClear.setText("Clear");
         btnClear.addActionListener(this::btnClearActionPerformed);
@@ -130,6 +137,118 @@ txtTaskId.setText("");
 txtTaskTitle.setText("");
 cmbStatus.setSelectedIndex(0);        // TODO add your handling code here:
     }//GEN-LAST:event_btnClearActionPerformed
+
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
+  try {
+    int id = Integer.parseInt(txtTaskId.getText());
+    String title = txtTaskTitle.getText();
+    String status = cmbStatus.getSelectedItem().toString();
+
+    if(title.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Task Title cannot be empty!");
+        return;
+    }
+
+    Task task = new Task(id, title, status);
+    TaskDAO dao = new TaskDAO();
+    Task existingTask = dao.findTaskById(id);
+        if (existingTask != null) {
+            JOptionPane.showMessageDialog(this, "Task ID already exists! Please use a unique ID.");
+            return;
+        }
+    dao.addTask(task);
+
+    JOptionPane.showMessageDialog(this, "Task added successfully.");
+} catch (Exception ex) {
+    JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+}      // TODO add your handling code here:
+    }//GEN-LAST:event_btnAddActionPerformed
+
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+try {
+    if (txtTaskId.getText().trim().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please enter a Task ID to search!");
+        return;
+    }
+    
+    int id = Integer.parseInt(txtTaskId.getText().trim());
+    TaskDAO dao = new TaskDAO();
+    Task task = dao.findTaskById(id);
+
+    if (task != null) {
+        txtTaskTitle.setText(task.getTaskTitle());
+        cmbStatus.setSelectedItem(task.getStatus());
+        JOptionPane.showMessageDialog(this, "Task found successfully.");
+    } else {
+        JOptionPane.showMessageDialog(this, "Task not found!");
+        txtTaskTitle.setText("");
+        cmbStatus.setSelectedIndex(0);
+    }
+} catch (NumberFormatException ex) {
+    JOptionPane.showMessageDialog(this, "Invalid Task ID format! Please enter a number.");
+} catch (Exception ex) {
+    JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+}      // TODO add your handling code here:
+    }//GEN-LAST:event_btnSearchActionPerformed
+
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+  try {
+    if (txtTaskId.getText().trim().isEmpty() || txtTaskTitle.getText().trim().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Task ID and Title cannot be empty for update!");
+        return;
+    }
+
+    int id = Integer.parseInt(txtTaskId.getText().trim());
+    String title = txtTaskTitle.getText().trim();
+    String status = cmbStatus.getSelectedItem().toString();
+
+    Task task = new Task(id, title, status);
+    TaskDAO dao = new TaskDAO();
+    boolean updated = dao.updateTask(task);
+
+    if (updated) {
+        JOptionPane.showMessageDialog(this, "Task updated successfully.");
+    } else {
+        JOptionPane.showMessageDialog(this, "Task not found to update.");
+    }
+} catch (NumberFormatException ex) {
+    JOptionPane.showMessageDialog(this, "Invalid Task ID format!");
+} catch (Exception ex) {
+    JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+} // TODO add your handling code here:
+    }//GEN-LAST:event_btnUpdateActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+try {
+    if (txtTaskId.getText().trim().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please enter a Task ID to delete!");
+        return;
+    }
+
+    int id = Integer.parseInt(txtTaskId.getText().trim());
+    TaskDAO dao = new TaskDAO();
+    
+    // මකන්න කලින් ඒ ID එක තියෙනවාද කියලා චෙක් කරගන්නවා
+    Task existingTask = dao.findTaskById(id);
+    if (existingTask == null) {
+        JOptionPane.showMessageDialog(this, "Task not found to delete.");
+        return;
+    }
+
+    boolean deleted = dao.deleteTask(id);
+    if (deleted) {
+        JOptionPane.showMessageDialog(this, "Task deleted successfully.");
+        // මකා දැමූ පසු Form එක clear කරනවා
+        txtTaskId.setText("");
+        txtTaskTitle.setText("");
+        cmbStatus.setSelectedIndex(0);
+    }
+} catch (NumberFormatException ex) {
+    JOptionPane.showMessageDialog(this, "Invalid Task ID format!");
+} catch (Exception ex) {
+    JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+}      // TODO add your handling code here:
+    }//GEN-LAST:event_btnDeleteActionPerformed
 
     /**
      * @param args the command line arguments
